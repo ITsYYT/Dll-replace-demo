@@ -1,0 +1,1 @@
+.\bin\Debug\main.exe
