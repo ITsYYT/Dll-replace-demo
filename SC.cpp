@@ -141,12 +141,10 @@ Module t2sdk("t2sdk.dll");
 CConfigInterface *FUNCTION_CALL_MODE NewConfig()
 {
     // auto NewConfig = t2sdk.get_fun<CConfigInterface *(*)()>("NewConfig");
-    t2sdk.get_fun<CConfigInterface *(*)()>("NewConfig")();
-    return nullptr;
+    return t2sdk.get_fun<CConfigInterface *(*)()>("NewConfig")();
 }
 
 int FUNCTION_CALL_MODE CConfigInterface::Load(const char *szFileName)
 {
-    t2sdk.get_fun<int (*)(const char *)>("Load")(szFileName);
-    return 0;
+    return t2sdk.get_fun<int (*)(const char *)>("Load")(szFileName);
 }
