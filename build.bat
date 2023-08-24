@@ -1,4 +1,5 @@
-call clean.bat
+@REM call clean.bat
+if exist build rd /s /q build
 
 mkdir build
 cd build

@@ -34,14 +34,14 @@ private:
     HMODULE dll_handle_m;
 };
 
-extern "C" __declspec(dllexport) void fun()
-{
-    printf("This is fun function in SC.dll\n");
-}
+// extern "C" __declspec(dllexport) void fun()
+// {
+//     printf("This is fun function in SC.dll\n");
+// }
 
-extern "C" __declspec(dllexport) void duplicate_name_test()
-{
-    printf("This is duplicate_name_test function in SC.dll\n");
-}
+// extern "C" __declspec(dllexport) void duplicate_name_test()
+// {
+//     printf("This is duplicate_name_test function in SC.dll\n");
+// }
 
 #endif // __SC_H__
