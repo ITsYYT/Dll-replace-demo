@@ -3,5 +3,6 @@ if exist build rd /s /q build
 
 mkdir build
 cd build
-cmake ..
+@REM cmake -G "Visual Studio 16 2019" ..
+cmake .. -A Win32 -G "Visual Studio 16 2019"
 cmake --build . --verbose

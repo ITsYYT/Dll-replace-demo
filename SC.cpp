@@ -7,13 +7,37 @@
 #include <string>
 using std::string;
 #include <Windows.h>
+#include <direct.h>
+
+#define DLL_EXPORT extern "C" __declspec(dllexport)
+// using DLL_EXPORT = extern "C" __declspec(dllexport);
+
+// Log function
+#ifndef __LOG_FUNCTION__
+#define __LOG_FUNCTION__
+
+#define LOG(...) Log(__FUNCTION__, __LINE__, __VA_ARGS__)
+
+void Log(const char *functionName, int lineNumber, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+
+    printf("[%s: %d] ", functionName, lineNumber);
+    vprintf(format, args);
+    printf("\n");
+
+    va_end(args);
+}
+
+#endif // __LOG_FUNCTION__
 
 // class Module : public LoadBase
 class Module
 {
 public:
     // string readLine(const string &str) override;
-    // __declspec(dllexport) Module(const char *);
+    //  Module(const char *);
     Module(const char *);
     ~Module();
 
@@ -56,7 +80,7 @@ public:
         }
         return nullptr;
     }
-#endif // 0
+#endif // Comment
 
 private:
     const char *dll_path_m;
@@ -67,15 +91,30 @@ private:
 // {
 // }
 
-Module::Module(const char *dll_path)
-    : dll_path_m(dll_path)
+Module::Module(const char *dll_name)
+    : dll_path_m(dll_name)
 {
-    dll_handle_m = ::LoadLibraryA(dll_path);
+
+#if 0
+    LOG("Dll name: %s", dll_name);
+
+    char dll_absolute_path[250];
+    char curr_path[250];
+    sprintf(dll_absolute_path, _getcwd(curr_path, 250), dll_path);
+    LOG("Current path = %s", curr_path);
+
+    dll_path_m = dll_absolute_path;
+#endif // 0
+
+    // dll_handle_m = ::LoadLibraryA("C:\\Users\\yty\\testhssdk.dll");
+    dll_handle_m = ::LoadLibraryA(dll_name);
     if (!dll_handle_m)
     {
-        printf("Failed to get library, empty pointer: %s\n", dll_path);
+        LOG("Failed to get library, dll path = %s", dll_path_m);
+
+        return;
     }
-    printf("Success to get library: %s\n", dll_path);
+    LOG("Success to get library: %s", dll_path_m);
 }
 
 Module::~Module()
@@ -83,9 +122,9 @@ Module::~Module()
     if (dll_handle_m)
     {
         ::FreeLibrary(dll_handle_m);
-        printf("Success to free library: %s\n", dll_path_m);
+        LOG("Success to free library: %s", dll_path_m);
     }
-    printf("Released module: %s\n", dll_path_m);
+    LOG("Released module: %s", dll_path_m);
 }
 
 const char *Module::get_dll_path() const
@@ -99,7 +138,7 @@ HMODULE Module::get_dll() const
 }
 
 /**
- * T2SDK 函数重写
+ * T2SDK functions that need to be rewritten
  */
 
 // CConfigInterface *FUNCTION_CALL_MODE NewConfig()
@@ -108,43 +147,71 @@ HMODULE Module::get_dll() const
 
 CConnectionInterface *FUNCTION_CALL_MODE NewConnection(CConfigInterface *lpConfig)
 {
-    // dbg("This is NewConnection");
-    printf("This is NewConnection");
+    LOG("In");
     return nullptr;
 }
 
 int FUNCTION_CALL_MODE CConnectionInterface::Create(CCallbackInterface *lpCallback)
 {
-    // dbg("This is Create");
-    printf("This is Create");
+    LOG("In");
     return 0;
 }
 
 int FUNCTION_CALL_MODE CConnectionInterface::Connect(unsigned int uiTimeout)
 {
-    // dbg("This is Connect");
-    printf("This is Connect");
+    LOG("In");
     return 0;
 }
 
 /**
- * T2SDK 函数复用
+ * T2SDK functions that can be reused
  */
 // auto myFunction = t2sdk.GetProcAddress<int(*)(int)>("MyFunction");
 // auto MyFunction = myLibrary["MyFunction"];
 
-// 初始化
+// Initialize
 Module t2sdk("t2sdk.dll");
 
 // auto NewConfig = t2sdk["NewConfig"];
-
 CConfigInterface *FUNCTION_CALL_MODE NewConfig()
 {
     // auto NewConfig = t2sdk.get_fun<CConfigInterface *(*)()>("NewConfig");
-    return t2sdk.get_fun<CConfigInterface *(*)()>("NewConfig")();
+    LOG("In");
+    return t2sdk.get_fun<CConfigInterface *(FUNCTION_CALL_MODE *)()>("NewConfig")();
 }
 
 int FUNCTION_CALL_MODE CConfigInterface::Load(const char *szFileName)
 {
-    return t2sdk.get_fun<int (*)(const char *)>("Load")(szFileName);
+    LOG("In");
+    return t2sdk.get_fun<int(FUNCTION_CALL_MODE *)(const char *)>("Load")(szFileName);
+}
+
+IF2Packer *FUNCTION_CALL_MODE NewPacker(int iVersion)
+{
+    LOG("In");
+    return t2sdk.get_fun<IF2Packer *(FUNCTION_CALL_MODE *)(int)>("NewPacker")(iVersion);
+}
+
+void FUNCTION_CALL_MODE BeginPack(void)
+{
+    LOG("In");
+    return t2sdk.get_fun<void(FUNCTION_CALL_MODE *)(void)>("BeginPack")();
+}
+
+int FUNCTION_CALL_MODE AddField(const char *szFieldName, char cFieldType = 'S', int iFieldWidth = 255, int iFieldScale = 4)
+{
+    LOG("In");
+    return t2sdk.get_fun<int(FUNCTION_CALL_MODE *)(const char *, char, int, int)>("AddField")(szFieldName, cFieldType, iFieldWidth, iFieldScale);
+}
+
+int FUNCTION_CALL_MODE AddStr(const char *szValue)
+{
+    LOG("In");
+    return t2sdk.get_fun<int(FUNCTION_CALL_MODE *)(const char *)>("AddStr")(szValue);
+}
+
+void FUNCTION_CALL_MODE EndPack()
+{
+    LOG("In");
+    return t2sdk.get_fun<void(FUNCTION_CALL_MODE *)()>("EndPack")();
 }
