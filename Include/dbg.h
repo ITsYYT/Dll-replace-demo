@@ -463,7 +463,7 @@ namespace dbg
 
   } // namespace detail
 
-  // Helper to dbg(�?)-print types
+  // Helper to dbg(â?)-print types
   template <typename T>
   struct print_type
   {
