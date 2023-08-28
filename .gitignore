@@ -35,4 +35,6 @@
 .vscode/
 build/
 bin/
+# !bin/Debug/t2sdk.dll
 lib/
+# !lib/Debug/t2sdk.lib

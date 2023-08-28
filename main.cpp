@@ -1,5 +1,7 @@
 // #include <SC.h>
 #include <t2sdk_interface.h>
+#include <LogFunc.h>
+// #include <dbg.h>
 
 #include <iostream>
 #include <map>
@@ -13,43 +15,23 @@
 //     printf("[%s: %d] %s\n", func_name, line, content, args...);
 // }
 
-// Log function
-#ifndef __LOG_FUNCTION__
-#define __LOG_FUNCTION__
-
-#define LOG(...) Log(__FUNCTION__, __LINE__, __VA_ARGS__)
-
-void Log(const char *functionName, int lineNumber, const char *format, ...)
-{
-    va_list args;
-    va_start(args, format);
-
-    printf("[%s: %d] ", functionName, lineNumber);
-    vprintf(format, args);
-    printf("\n");
-
-    va_end(args);
-}
-
-#endif // __LOG_FUNCTION__
-
-#if 1
-
+#if 1 // ShowPacket function
+// Display the fields within the package
 void ShowPacket(IF2UnPacker *lpUnPacker)
 {
-    LOG("--------------------start--------------------");
+    LOG("--------------------START--------------------");
     int i = 0, t = 0, j = 0, k = 0;
 
     for (i = 0; i < lpUnPacker->GetDatasetCount(); ++i)
     {
-        LOG("Debug in for(i)");
+        // LOG("Debug in for(i)");
         // 设置当前结果集
         lpUnPacker->SetCurrentDatasetByIndex(i);
 
         // 打印字段
         for (t = 0; t < lpUnPacker->GetColCount(); ++t)
         {
-            LOG("Debug in for(t)");
+            // LOG("Debug in for(t)");
             printf("%20s", lpUnPacker->GetColName(t));
         }
 
@@ -58,11 +40,11 @@ void ShowPacket(IF2UnPacker *lpUnPacker)
         // 打印所有记录
         for (j = 0; j < (int)lpUnPacker->GetRowCount(); ++j)
         {
-            LOG("Debug in for(j)");
+            // LOG("Debug in for(j)");
             // 打印每条记录
             for (k = 0; k < lpUnPacker->GetColCount(); ++k)
             {
-                LOG("Debug in for(k)");
+                // LOG("Debug in for(k)");
                 switch (lpUnPacker->GetColType(k))
                 {
                 case 'I':
@@ -92,7 +74,7 @@ void ShowPacket(IF2UnPacker *lpUnPacker)
 
                 default:
                     // 未知数据类型
-                    printf("未知数据类型。\n");
+                    printf("Unknown data type");
                     break;
                 }
             }
@@ -104,11 +86,12 @@ void ShowPacket(IF2UnPacker *lpUnPacker)
 
         putchar('\n');
     }
-}
 
+    LOG("--------------------END--------------------");
+}
 #endif // Comment
 
-#if 0
+#if 0  // Test Module class
 void test0()
 {
     Module HSDll("HS.dll");
@@ -134,9 +117,10 @@ void test0()
 }
 #endif // Comment
 
+// Test initial connection
 void test_t2sdk()
 {
-    LOG("--------------------start--------------------");
+    LOG("--------------------START--------------------");
 #if 1
     // Create a CConfig object to obtain attributes
     // such as "IP address" and "security mode" in the configuration file
@@ -175,13 +159,28 @@ void test_t2sdk()
     {
         LOG("Create return value");
     }
+
+    LOG("--------------------END--------------------");
 }
 
+// Test packer and unpacker related interfaces
 void test_packer()
 {
-    LOG("--------------------start--------------------");
-    std::map<std::string, std::string> params{
-        {"op_branch_no", "100"}, {"op_entrust_way", "1"}, {"op_station", ""}};
+    LOG("--------------------START--------------------");
+    // std::map<std::string, std::string> params{
+    //     {"op_branch_no", "100"}, {"op_entrust_way", "1"}, {"op_station", " "}};
+    std::map<std::string, std::string> params{{"op_branch_no", "0"},
+                                              {"op_entrust_way", "5"},
+                                              {"op_station", " "},
+                                              {"branch_no", "0"},
+                                              {"password", "600000"},
+                                              {"password_type", "2"},
+                                              {"input_content", "6"},
+                                              {"account_content", "3519012"},
+                                              {"content_type", "0"},
+                                              {"asset_prop", "0"}};
+
+    // dbg(params);
 
     // Get the packager
     IF2Packer *pack = NewPacker(2);
@@ -196,33 +195,49 @@ void test_packer()
     // Create a business package
     LOG("Begin pack");
     pack->BeginPack();
+
     for (const auto &kv : params)
     {
-        LOG("Current add field: %s, current add str: %s", kv.first.c_str(), kv.second.c_str());
+        LOG("Current add field: %s", kv.first.c_str());
+        // pack->AddField(kv.first.c_str(), 'S');
         pack->AddField(kv.first.c_str());
+    }
+    for (const auto &kv : params)
+    {
+        LOG("Current add str: %s", kv.second.c_str());
         pack->AddStr(kv.second.c_str());
     }
+
     pack->EndPack();
     LOG("End pack");
+    LOG("Pack version = %d", GetPackVersion(pack->GetPackBuf()));
+    LOG("Pack length = %d", pack->GetPackLen());
 
     // void *Pointer = NULL;
+    IF2UnPacker *un_pack = pack->UnPack();
+    LOG("Turn to unpacker");
+
     LOG("Begin showpack");
-    ShowPacket((IF2UnPacker *)pack);
+    ShowPacket(un_pack);
     LOG("End showpack");
 
+    LOG("Packbuf size = %d", pack->GetPackBufSize());
     pack->FreeMem(pack->GetPackBuf());
-    LOG("Pack free memory");
+    LOG("Package memory has been freed");
     pack->Release();
-    LOG("Pack release");
+    LOG("Package has been released");
+
+    LOG("--------------------END--------------------");
 }
 
 int main(int argc, char const *argv[])
 {
-    LOG("--------------------start--------------------");
+    LOG("--------------------START--------------------");
 
     // test0();
     // test_t2sdk();
     test_packer();
 
+    LOG("--------------------END--------------------");
     return 0;
 }

@@ -6,11 +6,24 @@ option(BuildHS "BuildHS" OFF)
 option(BuildT2SDK "BuildT2SDK" OFF)
 option(BuildMain "BuildMain" ON)
 
-SET(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+# Useless
+# set(CMAKE_CXX_FLAGS "-D__FILENAME__='\"$(subst $(SOURCE_PREFIX)/,,$(abspath $<))\"'")
 
+# Implemented only for MS-compatible tools on Windows.
+# Enable this boolean property to automatically create \
+# a module definition (.def) file with all global symbols \
+# found in the input .obj files for a SHARED library \
+# (or executable with ENABLE_EXPORTS) on Windows.
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+# Useless
 # set(CMAKE_GENERATOR_PLATFORM x86)
 # set(CMAKE_C_FLAGS "-m32")
 # set(CMAKE_CXX_FLAGS "-m32")
+
+# Useless
+# include (utils.cmake)
+# add_definitions(-Wno-builtin-macro-redefined)
 
 
 # Lib output path
@@ -40,30 +53,24 @@ if(${BuildSC})
     add_library(SC
     SHARED
         SC.cpp 
-        # ./Include/t2sdk_interface.h
-        # ./Include/SC.h 
-        # ./Include/dbg.h
         # ${DBG_MACRO_INCLUDE_DIRS}
     )
 endif(${BuildSC})
 
-# Build HS.dll HS.lib
+# Build HS.dll HS_Static.lib
 if(${BuildHS})
     add_library(HS 
     SHARED 
         HS.cpp 
-        ./Include/HS.h
-        # ./Include/dbg.h
         # ${DBG_MACRO_INCLUDE_DIRS}
     )
-    # add_library(HS_Static STATIC HS.cpp ./Include/HS.h)
+    # add_library(HS_Static STATIC HS.cpp )
 endif(${BuildHS})
 
 # Build t2sdk.lib
 if(${BuildT2SDK})
     add_library(t2sdk
     STATIC
-        # ./Include/t2sdk_interface.h
         ./Include/empty.cpp
     )    
 endif(${BuildT2SDK})
