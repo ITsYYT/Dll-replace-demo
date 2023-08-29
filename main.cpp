@@ -25,10 +25,10 @@ void ShowPacket(IF2UnPacker *lpUnPacker)
     for (i = 0; i < lpUnPacker->GetDatasetCount(); ++i)
     {
         // LOG("Debug in for(i)");
-        // 设置当前结果集
+        // Set current result set
         lpUnPacker->SetCurrentDatasetByIndex(i);
 
-        // 打印字段
+        // Print Fields
         for (t = 0; t < lpUnPacker->GetColCount(); ++t)
         {
             // LOG("Debug in for(t)");
@@ -37,11 +37,11 @@ void ShowPacket(IF2UnPacker *lpUnPacker)
 
         putchar('\n');
 
-        // 打印所有记录
+        // Print all records
         for (j = 0; j < (int)lpUnPacker->GetRowCount(); ++j)
         {
             // LOG("Debug in for(j)");
-            // 打印每条记录
+            // Print each record
             for (k = 0; k < lpUnPacker->GetColCount(); ++k)
             {
                 // LOG("Debug in for(k)");
@@ -68,12 +68,12 @@ void ShowPacket(IF2UnPacker *lpUnPacker)
                     int nLength = 0;
                     void *lpData = lpUnPacker->GetRawByIndex(k, &nLength);
 
-                    // 对2进制数据进行处理
+                    // Process binary data
                     break;
                 }
 
                 default:
-                    // 未知数据类型
+                    // Unknown data type
                     printf("Unknown data type");
                     break;
                 }
