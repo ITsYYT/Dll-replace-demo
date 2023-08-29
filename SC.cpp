@@ -1,4 +1,4 @@
-// #include <SC.h>
+ï»¿// #include <SC.h>
 #include <t2sdk_interface.h>
 #include <LogFunc.h>
 // #include <dbg.h>
@@ -118,34 +118,35 @@ HMODULE Module::get_dll() const
     return dll_handle_m;
 }
 
+// Initialize dll library
+Module t2sdk("t2sdk.dll");
+
 /**
- * T2SDK functions that need to be rewritten
+ * T2SDK functions that have to be rewritten
  */
 
-// CConfigInterface *FUNCTION_CALL_MODE NewConfig()
-// {
-// }
+CConfigInterface *FUNCTION_CALL_MODE NewConfig()
+{
+    LOG("In");
+#if 1
+    return t2sdk.get_fun<CConfigInterface *(FUNCTION_CALL_MODE *)()>("NewConfig")();
+#else
+    return nullptr;
+#endif // Comment to debug
+}
 
-// TODO: Õâ¶Îº¯ÊıÊµÏÖÒª¸Ä£¬ÏÖÔÚµÄ·½·¨ÊÇÓĞ´íµÄ
-//       ÕıÈ··½·¨ÊÇºÍÔ­À´Ò»ÑùÊµÏÖÒ»¸ö CConnectionInterface Àà£¬
-//       ÀàÖĞÓĞ Create¡¢Connect µÈ³ÉÔ±º¯Êı
+// TODO: è¿™æ®µå‡½æ•°å®ç°è¦æ”¹ï¼Œç°åœ¨çš„æ–¹æ³•æ˜¯æœ‰é”™çš„
+//       æ­£ç¡®æ–¹æ³•æ˜¯å’ŒåŸæ¥ä¸€æ ·å®ç°ä¸€ä¸ª CConnectionInterface ç±»ï¼Œ
+//       ç±»ä¸­æœ‰ Createã€Connect ç­‰æˆå‘˜å‡½æ•°
 CConnectionInterface *FUNCTION_CALL_MODE NewConnection(CConfigInterface *lpConfig)
 {
     LOG("In");
+#if 1
+    return t2sdk.get_fun<CConnectionInterface *(FUNCTION_CALL_MODE *)(CConfigInterface *)>("NewConnection")(lpConfig);
+#else
     return nullptr;
+#endif // Comment to debug
 }
-
-// int FUNCTION_CALL_MODE CConnectionInterface::Create(CCallbackInterface *lpCallback)
-// {
-//     LOG("In");
-//     return 0;
-// }
-
-// int FUNCTION_CALL_MODE CConnectionInterface::Connect(unsigned int uiTimeout)
-// {
-//     LOG("In");
-//     return 0;
-// }
 
 /**
  * T2SDK functions that can be reused
@@ -153,22 +154,7 @@ CConnectionInterface *FUNCTION_CALL_MODE NewConnection(CConfigInterface *lpConfi
 // auto myFunction = t2sdk.GetProcAddress<int(*)(int)>("MyFunction");
 // auto MyFunction = myLibrary["MyFunction"];
 
-// Initialize dll library
-Module t2sdk("t2sdk.dll");
-
 // auto NewConfig = t2sdk["NewConfig"];
-CConfigInterface *FUNCTION_CALL_MODE NewConfig()
-{
-    // auto NewConfig = t2sdk.get_fun<CConfigInterface *(*)()>("NewConfig");
-    LOG("In");
-    return t2sdk.get_fun<CConfigInterface *(FUNCTION_CALL_MODE *)()>("NewConfig")();
-}
-
-// int FUNCTION_CALL_MODE CConfigInterface::Load(const char *szFileName)
-// {
-//     LOG("In");
-//     return t2sdk.get_fun<int(FUNCTION_CALL_MODE *)(const char *)>("Load")(szFileName);
-// }
 
 IF2Packer *FUNCTION_CALL_MODE NewPacker(int iVersion)
 {
@@ -182,26 +168,28 @@ int FUNCTION_CALL_MODE GetPackVersion(const void *lpBuffer)
     return t2sdk.get_fun<int(FUNCTION_CALL_MODE *)(const void *)>("GetPackVersion")(lpBuffer);
 }
 
-// void FUNCTION_CALL_MODE BeginPack(void)
-// {
-//     LOG("In");
-//     return t2sdk.get_fun<void(FUNCTION_CALL_MODE *)(void)>("BeginPack")();
-// }
+#if 0  // Useless
+void FUNCTION_CALL_MODE BeginPack(void)
+{
+    LOG("In");
+    return t2sdk.get_fun<void(FUNCTION_CALL_MODE *)(void)>("BeginPack")();
+}
 
-// int FUNCTION_CALL_MODE AddField(const char *szFieldName, char cFieldType = 'S', int iFieldWidth = 255, int iFieldScale = 4)
-// {
-//     LOG("In");
-//     return t2sdk.get_fun<int(FUNCTION_CALL_MODE *)(const char *, char, int, int)>("AddField")(szFieldName, cFieldType, iFieldWidth, iFieldScale);
-// }
+int FUNCTION_CALL_MODE AddField(const char *szFieldName, char cFieldType = 'S', int iFieldWidth = 255, int iFieldScale = 4)
+{
+    LOG("In");
+    return t2sdk.get_fun<int(FUNCTION_CALL_MODE *)(const char *, char, int, int)>("AddField")(szFieldName, cFieldType, iFieldWidth, iFieldScale);
+}
 
-// int FUNCTION_CALL_MODE AddStr(const char *szValue)
-// {
-//     LOG("In");
-//     return t2sdk.get_fun<int(FUNCTION_CALL_MODE *)(const char *)>("AddStr")(szValue);
-// }
+int FUNCTION_CALL_MODE AddStr(const char *szValue)
+{
+    LOG("In");
+    return t2sdk.get_fun<int(FUNCTION_CALL_MODE *)(const char *)>("AddStr")(szValue);
+}
 
-// void FUNCTION_CALL_MODE EndPack()
-// {
-//     LOG("In");
-//     return t2sdk.get_fun<void(FUNCTION_CALL_MODE *)()>("EndPack")();
-// }
+void FUNCTION_CALL_MODE EndPack()
+{
+    LOG("In");
+    return t2sdk.get_fun<void(FUNCTION_CALL_MODE *)()>("EndPack")();
+}
+#endif // Comment

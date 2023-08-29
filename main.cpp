@@ -186,7 +186,6 @@ void test_packer()
     IF2Packer *pack = NewPacker(2);
     if (!pack)
     {
-        // print("test_packer", __LINE__, "Error: Empty pointer: pack");
         LOG("Error: Empty pointer pack");
         return;
     }
@@ -196,6 +195,9 @@ void test_packer()
     LOG("Begin pack");
     pack->BeginPack();
 
+    /**
+     * WARNING: AddStr ONLY CAN USE AFTER AddField FINESHED
+     */
     for (const auto &kv : params)
     {
         LOG("Current add field: %s", kv.first.c_str());
