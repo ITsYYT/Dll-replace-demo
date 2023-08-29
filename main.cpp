@@ -1,4 +1,4 @@
-// #include <SC.h>
+﻿// #include <SC.h>
 #include <t2sdk_interface.h>
 #include <LogFunc.h>
 // #include <dbg.h>
@@ -232,13 +232,135 @@ void test_packer()
     LOG("--------------------END--------------------");
 }
 
+// Test connection
+void test_connection()
+{
+    LOG("--------------------START--------------------");
+
+    CConfigInterface *lpConfig = NewConfig();
+    lpConfig->AddRef();
+    if (!lpConfig)
+    {
+        LOG("\033[0;31mEmpty pointer lpConfig\033[0m");
+        lpConfig->Release();
+        return;
+    }
+    else
+    {
+        LOG("Config has been created");
+    }
+
+    lpConfig->Load("Hsconfig.ini");
+    LOG("Config has been loaded");
+
+    CConnectionInterface *lpConnection = NewConnection(lpConfig);
+    lpConnection->AddRef();
+    if (!lpConnection)
+    {
+        LOG("\033[0;31mEmpty pointer loConnection\033[0m");
+        lpConnection->Release();
+        return;
+    }
+    else
+    {
+        /**
+         * Q: What does GetString do?
+         *    The current test results are simply returning the third parameter
+         *    : "DEFAULT_SERVERS"
+         *    When third parameter is empty, return ""
+         *
+         * virtual const char * FUNCTION_CALL_MODE
+         * GetString(
+         *  const char *szSection, const char *szEntry, const char *szDefault
+         * ) = 0;
+         *
+         * const char *szSection 节名
+         * const char *szEntry 变量名
+         * const char *szDefault 默认值
+         */
+        LOG("\033[0;32mConnecting to: %s\033[0m", lpConfig->GetString("t2sdk", "servers", "DEFAULT_SERVERS"));
+    }
+
+    int ret = 0;
+    LOG("Error return value = %d", ret);
+
+#if 0
+    if (0 == (ret = lpConnection->Create(NULL)))
+    {
+        LOG("Created");
+        // Start connect
+        if (ret = lpConnection->Connect(1000))
+        {
+            LOG("\033[0;31mError message: %s\033[0m", lpConnection->GetErrorMsg(ret));
+        }
+        else
+        {
+            LOG("Connected");
+            while (true)
+            {
+                LOG("Sleeping");
+                Sleep(3000);
+            }
+        }
+    }
+    else
+    {
+        LOG("\033[0;31mError message: %s\033[0m", lpConnection->GetErrorMsg(ret));
+
+        // ret = lpConnection->GetConnectError();
+        // LOG("\033[0;31mGetConnectError message: %s\033[0m", lpConnection->GetErrorMsg(ret));
+    }
+#else
+    if (0 != (ret = lpConnection->Create(NULL)))
+    {
+        LOG("\033[0;31mError message: %s\033[0m", lpConnection->GetErrorMsg(ret));
+        lpConfig->Release();
+        LOG("Released: lpConfig");
+        lpConnection->Release();
+        LOG("Released: lpConnection");
+        return;
+    }
+    LOG("Created");
+
+    if (0 != (ret = lpConnection->Connect(1000)))
+    {
+        LOG("\033[0;31mError message: %s\033[0m", lpConnection->GetErrorMsg(ret));
+
+        ret = lpConnection->GetConnectError();
+        LOG("\033[0;31mGetConnectError message: %s\033[0m", lpConnection->GetErrorMsg(ret));
+
+        lpConfig->Release();
+        LOG("Released: lpConfig");
+        lpConnection->Release();
+        LOG("Released: lpConnection");
+        return;
+    }
+    LOG("Connected");
+
+    while (true)
+    {
+
+        LOG("Sleeping");
+        Sleep(3000);
+    }
+
+#endif // Comment to debug
+
+    lpConfig->Release();
+    LOG("Released: lpConfig");
+    lpConnection->Release();
+    LOG("Released: lpConnection");
+    LOG("--------------------END--------------------");
+}
+
 int main(int argc, char const *argv[])
 {
     LOG("--------------------START--------------------");
 
     // test0();
     // test_t2sdk();
-    test_packer();
+    // test_packer();
+    test_connection();
 
     LOG("--------------------END--------------------");
     return 0;

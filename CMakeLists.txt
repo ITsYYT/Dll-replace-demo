@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(BuildDLL)
 
-option(BuildSC "BuildSC" ON)
+option(BuildSC "BuildSC" OFF)
 option(BuildHS "BuildHS" OFF)
 option(BuildT2SDK "BuildT2SDK" OFF)
 option(BuildMain "BuildMain" ON)
