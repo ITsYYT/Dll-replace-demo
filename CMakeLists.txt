@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.15)
 project(BuildDLL)
 
-option(BuildSC "BuildSC" OFF)
+option(BuildSC "BuildSC" ON)
 option(BuildHS "BuildHS" OFF)
 option(BuildT2SDK "BuildT2SDK" OFF)
 option(BuildMain "BuildMain" ON)
 
 # Useless
+# Change the C++ macro variable __FILE__ to relative path at build time
 # set(CMAKE_CXX_FLAGS "-D__FILENAME__='\"$(subst $(SOURCE_PREFIX)/,,$(abspath $<))\"'")
 
 # Implemented only for MS-compatible tools on Windows.
@@ -14,7 +15,17 @@ option(BuildMain "BuildMain" ON)
 # a module definition (.def) file with all global symbols \
 # found in the input .obj files for a SHARED library \
 # (or executable with ENABLE_EXPORTS) on Windows.
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+# set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+# Useless
+# In Windows, it has to be done at build time: cmake --build {DIR} --config Release
+#                                          or: cmake -B {DIR} -DCMAKE_CONFIGURATION_TYPES=Release
+# set(CMAKE_BUILD_TYPE Release)
+
+set(CMAKE_CXX_FLAGS "-MT")
+
+# Resolve redefinition
+set(CMAKE_EXE_LINKER_FLAGS  "/FORCE")
 
 # Useless
 # set(CMAKE_GENERATOR_PLATFORM x86)
@@ -37,17 +48,20 @@ message(STATUS "* Path of CURRENT_LIST: ${CMAKE_CURRENT_LIST_DIR}")
 
 # Include path
 include_directories(${CMAKE_SOURCE_DIR}/Include)
-message(STATUS "* Path of include: ${CMAKE_SOURCE_DIR}/Include")
+message(STATUS "* Path of include_directories: ${CMAKE_SOURCE_DIR}/Include")
 # Link library path
-link_directories(${CMAKE_CURRENT_LIST_DIR}/lib)
-link_directories(${CMAKE_CURRENT_LIST_DIR}/bin)
-message(STATUS "* Path of link: ${CMAKE_SOURCE_DIR}/lib")
+link_directories(
+    ${CMAKE_CURRENT_LIST_DIR}/lib
+    # ${CMAKE_CURRENT_LIST_DIR}/bin
+)
+message(STATUS "* Path of link_directories: ${CMAKE_SOURCE_DIR}/lib")
 
 # Build SC.dll
 if(${BuildSC})
     add_library(SC
     SHARED
-        SC.cpp 
+    STATIC 
+        SC.cpp
     )
 endif(${BuildSC})
 
@@ -69,10 +83,10 @@ endif(${BuildT2SDK})
 
 # Build main.exe
 if(${BuildMain})
-    add_executable(main main.cpp)
+    add_executable(main main.cpp )
     target_link_libraries(main 
         # t2sdk.dll
-        SC.lib
+        SC
     )
 endif(${BuildMain})
 

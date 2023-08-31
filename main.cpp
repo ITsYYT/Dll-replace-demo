@@ -1,5 +1,6 @@
 ﻿// #include <SC.h>
-#include <t2sdk_interface.h>
+// #include <t2sdk_interface.h>
+#include <sc_interface.h>
 #include <LogFunc.h>
 // #include <dbg.h>
 
@@ -255,6 +256,8 @@ void test_connection()
 
     CConnectionInterface *lpConnection = NewConnection(lpConfig);
     lpConnection->AddRef();
+
+#if 0
     if (!lpConnection)
     {
         LOG("\033[0;31mEmpty pointer loConnection\033[0m");
@@ -274,12 +277,13 @@ void test_connection()
          *  const char *szSection, const char *szEntry, const char *szDefault
          * ) = 0;
          *
-         * const char *szSection 节名
-         * const char *szEntry 变量名
-         * const char *szDefault 默认值
+         *      const char *szSection 节名
+         *      const char *szEntry 变量名
+         *      const char *szDefault 默认值
          */
         LOG("\033[0;32mConnecting to: %s\033[0m", lpConfig->GetString("t2sdk", "servers", "DEFAULT_SERVERS"));
     }
+#endif // Comment
 
     int ret = 0;
     LOG("Error return value = %d", ret);
@@ -292,6 +296,14 @@ void test_connection()
         if (ret = lpConnection->Connect(1000))
         {
             LOG("\033[0;31mError message: %s\033[0m", lpConnection->GetErrorMsg(ret));
+
+            ret = lpConnection->GetConnectError();
+            LOG("\033[0;31mGetConnectError message: %s\033[0m", lpConnection->GetErrorMsg(ret));
+
+            lpConfig->Release();
+            LOG("Released: lpConfig");
+            lpConnection->Release();
+            LOG("Released: lpConnection");
         }
         else
         {
@@ -306,19 +318,23 @@ void test_connection()
     else
     {
         LOG("\033[0;31mError message: %s\033[0m", lpConnection->GetErrorMsg(ret));
-
-        // ret = lpConnection->GetConnectError();
-        // LOG("\033[0;31mGetConnectError message: %s\033[0m", lpConnection->GetErrorMsg(ret));
+        lpConfig->Release();
+        LOG("Released: lpConfig");
+        lpConnection->Release();
+        LOG("Released: lpConnection");
+        // return;
     }
 #else
     if (0 != (ret = lpConnection->Create(NULL)))
     {
         LOG("\033[0;31mError message: %s\033[0m", lpConnection->GetErrorMsg(ret));
-        lpConfig->Release();
-        LOG("Released: lpConfig");
-        lpConnection->Release();
-        LOG("Released: lpConnection");
-        return;
+        // lpConfig->Release();
+        // LOG("Released: lpConfig");
+        // lpConnection->Release();
+        // LOG("Released: lpConnection");
+        // return;
+
+        goto end;
     }
     LOG("Created");
 
@@ -329,11 +345,13 @@ void test_connection()
         ret = lpConnection->GetConnectError();
         LOG("\033[0;31mGetConnectError message: %s\033[0m", lpConnection->GetErrorMsg(ret));
 
-        lpConfig->Release();
-        LOG("Released: lpConfig");
-        lpConnection->Release();
-        LOG("Released: lpConnection");
-        return;
+        // lpConfig->Release();
+        // LOG("Released: lpConfig");
+        // lpConnection->Release();
+        // LOG("Released: lpConnection");
+        // return;
+
+        goto end;
     }
     LOG("Connected");
 
@@ -346,10 +364,14 @@ void test_connection()
 
 #endif // Comment to debug
 
+end:
     lpConfig->Release();
     LOG("Released: lpConfig");
     lpConnection->Release();
     LOG("Released: lpConnection");
+    // ret = lpConnection->Close();
+    // LOG("\033[0;31mError message: %s\033[0m", lpConnection->GetErrorMsg(ret));
+
     LOG("--------------------END--------------------");
 }
 
@@ -361,6 +383,8 @@ int main(int argc, char const *argv[])
     // test_t2sdk();
     // test_packer();
     test_connection();
+
+    // debug
 
     LOG("--------------------END--------------------");
     return 0;

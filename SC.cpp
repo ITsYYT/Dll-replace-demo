@@ -1,5 +1,6 @@
 ﻿// #include <SC.h>
-#include <t2sdk_interface.h>
+// #include <t2sdk_interface.h>
+#include <sc_interface.h>
 #include <LogFunc.h>
 // #include <dbg.h>
 // #include <LoadDllBase.h>
@@ -93,15 +94,23 @@ Module::Module(const char *dll_name)
     {
         LOG("Failed to get library, dll path = %s", dll_path_m);
 
+        char curr_path[250];
+        LOG("Current path: %s", _getcwd(curr_path, 250));
         return;
     }
     LOG("Success to get library: %s", dll_path_m);
+    char curr_path[250];
+    LOG("Current path: %s", _getcwd(curr_path, 250));
+    // Sleep(1000);
 }
 
 Module::~Module()
 {
+    LOG("In");
+    // Sleep(3000);
     if (dll_handle_m)
     {
+        LOG("In");
         ::FreeLibrary(dll_handle_m);
         LOG("Success to free library: %s", dll_path_m);
     }
@@ -135,18 +144,243 @@ CConfigInterface *FUNCTION_CALL_MODE NewConfig()
 #endif // Comment to debug
 }
 
-// TODO: 这段函数实现要改，现在的方法是有错的
-//       正确方法是和原来一样实现一个 CConnectionInterface 类，
-//       类中有 Create、Connect 等成员函数
 CConnectionInterface *FUNCTION_CALL_MODE NewConnection(CConfigInterface *lpConfig)
 {
     LOG("In");
-#if 1
+#if 0
     return t2sdk.get_fun<CConnectionInterface *(FUNCTION_CALL_MODE *)(CConfigInterface *)>("NewConnection")(lpConfig);
 #else
-    return nullptr;
+    // return nullptr;
+    SCConnectionInterface *p = new SCConnectionInterface();
+    return p;
 #endif // Comment to debug
 }
+
+#pragma region // Connection
+unsigned long FUNCTION_CALL_MODE SCConnectionInterface::QueryInterface(const char *iid, IKnown **ppv)
+{
+    LOG("In");
+    return 1;
+}
+
+unsigned long FUNCTION_CALL_MODE SCConnectionInterface::AddRef()
+{
+    LOG("In");
+    return 1;
+}
+
+unsigned long FUNCTION_CALL_MODE SCConnectionInterface::Release()
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE SCConnectionInterface::Create(CCallbackInterface *lpCallback)
+{
+    LOG("In");
+    // lpCallback = nullptr;
+    return 1;
+}
+
+int FUNCTION_CALL_MODE SCConnectionInterface::Connect(unsigned int uiTimeout)
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE SCConnectionInterface::Close()
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE Reserved1()
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE Reserved2()
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE Reserved3()
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE Reserved4()
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE Reserved5()
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE Reserved6()
+{
+    LOG("In");
+    return 1;
+}
+
+const char *FUNCTION_CALL_MODE GetServerAddress(int *lpPort)
+{
+    LOG("In");
+    return nullptr;
+}
+
+int FUNCTION_CALL_MODE GetStatus()
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE GetServerLoad()
+{
+    LOG("In");
+    return 1;
+}
+
+const char *FUNCTION_CALL_MODE GetErrorMsg(int nErrorCode)
+{
+    LOG("In");
+    return NULL;
+}
+
+int FUNCTION_CALL_MODE GetConnectError()
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE SendBiz(int iFunID, IF2Packer *lpPacker, int nAsy = 0, int iSystemNo = 0, int nCompressID = 1)
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE RecvBiz(int hSend, void **lppUnPackerOrStr, unsigned uiTimeout = 1000, unsigned uiFlag = 0)
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE SendBizEx(int iFunID, IF2Packer *lpPacker, char *svrName, int nAsy = 0, int iSystemNo = 0, int nCompressID = 1, int branchNo = 0, LPREQ_DATA lpRequest = NULL)
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE RecvBizEx(int hSend, void **lppUnpackerOrStr, LPRET_DATA *lpRetData, unsigned uiTimeout = 1000, unsigned uiFlag = 0)
+{
+    LOG("In");
+    return 1;
+}
+int FUNCTION_CALL_MODE CreateEx(CCallbackInterface *lpCallback)
+{
+    LOG("In");
+    return 1;
+}
+
+const char *FUNCTION_CALL_MODE GetRealAddress()
+{
+    LOG("In");
+    return nullptr;
+}
+
+int FUNCTION_CALL_MODE Reserved8()
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE Reserved9()
+{
+    LOG("In");
+    return 1;
+}
+
+const char *FUNCTION_CALL_MODE GetSelfAddress()
+{
+    LOG("In");
+    return nullptr;
+}
+
+const char *FUNCTION_CALL_MODE GetSelfMac()
+{
+    LOG("In");
+    return nullptr;
+}
+
+CSubscribeInterface *FUNCTION_CALL_MODE NewSubscriber(CSubCallbackInterface *lpCallback, char *SubScribeName, int iTimeOut,
+                                                      int iInitRecvQLen = INIT_RECVQ_LEN, int iStepRecvQLen = STEP_RECVQ_LEN)
+{
+    LOG("In");
+    return nullptr;
+}
+
+CPublishInterface *FUNCTION_CALL_MODE NewPublisher(char *PublishName, int msgCount, int iTimeOut, bool bResetNo = false)
+{
+    LOG("In");
+    return nullptr;
+}
+
+IF2UnPacker *FUNCTION_CALL_MODE GetTopic(bool byForce, int iTimeOut)
+{
+    LOG("In");
+    return nullptr;
+}
+
+const char *FUNCTION_CALL_MODE GetMCLastError()
+{
+    LOG("In");
+    return nullptr;
+}
+
+int FUNCTION_CALL_MODE Create2BizMsg(CCallbackInterface *lpCallback)
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE SendBizMsg(IBizMessage *lpMsg, int nAsy = 0)
+{
+    LOG("In");
+    return 1;
+}
+
+int FUNCTION_CALL_MODE RecvBizMsg(int hSend, IBizMessage **lpMsg, unsigned uiTimeout = 1000, unsigned uiFlag = 0)
+{
+    LOG("In");
+    return 1;
+}
+
+CFileUpdateInterface *FUNCTION_CALL_MODE NewFileUpdate(const char *szTopicName, CFileUpdateCallbackInterface *lpCallBack, const char *szScanDir, const char *szUpdateDir, unsigned int uiTimeOut = 5000, const char *szDirFilter = NULL)
+{
+    LOG("In");
+    return nullptr;
+}
+
+const char *FUNCTION_CALL_MODE GetFileUpdateLastError()
+{
+    LOG("In");
+    return nullptr;
+}
+
+const char *FUNCTION_CALL_MODE GetLastAnsError(bool bAsyError = 0)
+{
+    LOG("In");
+    return nullptr;
+}
+
+#pragma endregion // Connection
 
 /**
  * T2SDK functions that can be reused

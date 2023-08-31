@@ -1,4 +1,5 @@
-.\bin\Debug\main.exe
+@REM .\bin\Debug\main.exe
+.\bin\Release\main.exe
 
 @REM cd bin
 @REM cd Debug
